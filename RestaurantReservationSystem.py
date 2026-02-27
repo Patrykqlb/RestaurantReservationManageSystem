@@ -96,7 +96,7 @@ while True:
     print("4. Free Table")
     print("5. Quit")
 
-    choice = int(input("Enter choice: "))
+    choice = int(input("Enter choice:  "))
 
     tables = download_tables_from_db()
     match choice:
