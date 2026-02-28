@@ -18,14 +18,6 @@ class Table:
     def id(self):
         return self._db_id
 
-    def reserve(self):
-        self._isavailable = False
-
-    def free_table(self):
-        self._isavailable = True
-
-
-
 class Restaurant:
     def __init__(self,restaurant_id,restaurant_name):
         self._restaurant_id = restaurant_id

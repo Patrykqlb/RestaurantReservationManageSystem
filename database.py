@@ -87,21 +87,46 @@ def choose_restaurant(r_id):
 #####################################################################################################################
                                     #Table functions
 #####################################################################################################################
-def reserve_db(table_id):  # Function changes status of the table to reserved
+def reserve_db(table_id,restaurant_id):  # Function changes status of the table to reserved
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("UPDATE Tables SET isavailable = 0 WHERE id= ?", (table_id,))
+    cursor.execute(
+            "UPDATE Tables SET isavailable = 0 WHERE id= ? AND restaurant_id = ?",
+            (table_id, restaurant_id)
+    )
+
     conn.commit()
     conn.close()
 
-def free_table_db(table_id):  # Function changes status of the table to free
+def free_table_db(table_id, restaurant_id):  # Function changes status of the table to free
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("UPDATE Tables SET isavailable = 1 WHERE id= ?", (table_id,))
+    cursor.execute(
+            "UPDATE Tables SET isavailable = 1 WHERE id = ? AND restaurant_id = ?",
+            (table_id, restaurant_id)
+    )
     conn.commit()
     conn.close()
 
+def add_table_db(restaurant_id, table_name, seats):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute('''
+        INSERT INTO Tables ( name, number_of_seats, isavailable, restaurant_id)
+        VALUES (?, ?, 1, ?)
+    ''',(table_name, seats, restaurant_id,))
+    conn.commit()
+    conn.close()
 
+def delete_table_db(table_id, restaurant_id):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute(
+        "DELETE FROM Tables WHERE id = ? AND restaurant_id = ?",
+            (table_id, restaurant_id,)
+    )
+    conn.commit()
+    conn.close()
 #####################################################################################################################
                                     #Restaurant Functions
 #####################################################################################################################
