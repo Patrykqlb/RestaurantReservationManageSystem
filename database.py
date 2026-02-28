@@ -71,22 +71,22 @@ def create_example():
     conn.commit()
     conn.close()
 
-
-def choose_restaurant(r_id):
-    conn = connect_db()
-    cursor = conn.cursor()
-    cursor.execute("SELECT id, restaurant_name FROM Restaurants WHERE id = ?", (r_id,))
-    row = cursor.fetchone()
-    conn.close()
-    if row:
-        my_restaurant = Restaurant(restaurant_id=row[0], restaurant_name=row[1],)
-        return my_restaurant
-    return None
-
-
 #####################################################################################################################
                                     #Table functions
 #####################################################################################################################
+
+# Function that downloads data from database and puts it in a list
+def download_tables_from_db(restaurant_id):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, name, number_of_seats, isavailable FROM Tables WHERE restaurant_id = ?", (restaurant_id,))
+    table_list = []
+    for row in cursor.fetchall():
+        temp_table = Table(db_id=row[0], name=row[1], number_of_seats=row[2], isavailable=bool(row[3]))
+        table_list.append(temp_table)
+    conn.close()
+    return table_list
+
 def reserve_db(table_id,restaurant_id):  # Function changes status of the table to reserved
     conn = connect_db()
     cursor = conn.cursor()
@@ -131,18 +131,33 @@ def delete_table_db(table_id, restaurant_id):
                                     #Restaurant Functions
 #####################################################################################################################
 
-# Function that downloads data from database and puts it in a list
-
-def download_tables_from_db(restaurant_id):
+def add_restaurant(name):
     conn = connect_db()
     cursor = conn.cursor()
-    cursor.execute("SELECT id, name, number_of_seats, isavailable FROM Tables WHERE restaurant_id = ?", (restaurant_id,))
-    table_list = []
-    for row in cursor.fetchall():
-        temp_table = Table(db_id=row[0], name=row[1], number_of_seats=row[2], isavailable=bool(row[3]))
-        table_list.append(temp_table)
+    cursor.execute("INSERT INTO Restaurants (restaurant_name) VALUES (?)", (name,))
+    conn.commit()
     conn.close()
-    return table_list
+
+def download_restaurants_from_db():
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, restaurant_name FROM Restaurants")
+    restaurants_list = []
+    for row in cursor.fetchall():
+        temp_table = Restaurant(restaurant_id=row[0], restaurant_name=row[1])
+        restaurants_list.append(temp_table)
+    conn.close()
+    return restaurants_list
 
 
 
+def choose_restaurant(r_id):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("SELECT id, restaurant_name FROM Restaurants WHERE id = ?", (r_id,))
+    row = cursor.fetchone()
+    conn.close()
+    if row:
+        my_restaurant = Restaurant(restaurant_id=row[0], restaurant_name=row[1],)
+        return my_restaurant
+    return None
