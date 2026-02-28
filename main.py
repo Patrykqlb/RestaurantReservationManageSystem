@@ -4,8 +4,13 @@ init_db()
 RED = '\033[31m'
 GREEN = '\033[32m'
 RESET = '\033[0m'
-
-
+def choice_id(my_r):
+    temp_id = input("Enter table number:  ")
+    if temp_id.isdigit():
+        index = int(temp_id) - 1
+        if 0 <= index < len(my_r.table_list):
+            return  my_r.table_list[index]
+    return None
 def manage_restaurant(restaurant_id):
     while True:
         my_r = choose_restaurant(restaurant_id)
@@ -27,28 +32,24 @@ def manage_restaurant(restaurant_id):
             my_r.table_list = download_tables_from_db(my_r.restaurant_id)
             match choice:
                 case 1:
-                    for t in my_r.table_list:
+                    for i, t in enumerate( my_r.table_list, start = 1):
                         if t.isavailable:
-                            print(f"ID |{t.id}| {t.table_name} with {t.number_of_seats}seats {GREEN} is available {RESET}")
+                            print(f"ID |{i}| {t.table_name} with {t.number_of_seats} seats {GREEN} is available {RESET}")
                         else:
-                            print(f"ID |{t.id}| {t.table_name} with {t.number_of_seats}seats {RED}  is not available {RESET}")
+                            print(f"ID |{i}| {t.table_name} with {t.number_of_seats} seats {RED} is not available {RESET}")
 
                 case 2:
-                    temp_id = int(input("Enter table ID:  "))
-                    for t in my_r.table_list:
-                        if t.id == temp_id:
-                            reserve_db(t.id,my_r.restaurant_id)
-                            print(t.table_name + "reserved")
-                            break
+                    chosen_table = choice_id(my_r)
+                    if chosen_table:
+                        reserve_db(chosen_table.id, my_r.restaurant_id)
+                        print(f"{chosen_table.table_name} is reserved now")
                     else:
                         print("Table not found")
                 case 3:
-                    temp_id = int(input("Enter table ID:  "))
-                    for t in my_r.table_list:
-                        if t.id == temp_id:
-                            free_table_db(t.id, my_r.restaurant_id)
-                            print(t.table_name + "is free now")
-                            break
+                    chosen_table = choice_id(my_r)
+                    if chosen_table:
+                        free_table_db(chosen_table.id,my_r.restaurant_id)
+                        print(f"{chosen_table.table_name} is free now")
                     else:
                         print("Table not found")
                 case 4:
@@ -58,20 +59,21 @@ def manage_restaurant(restaurant_id):
                     add_table_db(my_r.restaurant_id, t_name, t_seat)
                 case 5:
                     print(RED + "Deleting Table" + RESET)
-                    temp_id = int(input("Enter table ID:  "))
-                    for t in my_r.table_list:
-                        if t.id == temp_id:
-                            print(f"You chose ID|{t.id}| {t.table_name} with {t.number_of_seats} seats to be deleted")
-                            while True:
-                                print("1. Confirm")
-                                print("2. Cancel")
-                                choice = int(input("Enter choice:  "))
-                                if choice == 1:break
-                                elif choice == 2:break
-                            if choice == 1:
-                                delete_table_db(t.id, my_r.restaurant_id)
-                            else:
-                                break
+                    t = choice_id(my_r)
+                    if t:
+                        print(f"You chose |{t.id}| {t.table_name} with {t.number_of_seats} seats to be deleted")
+                        while True:
+                            print("1. Confirm")
+                            print("2. Cancel")
+                            choice = int(input("Enter choice:  "))
+                            if choice == 1:break
+                            elif choice == 2:break
+                        if choice == 1:
+                            delete_table_db(t.id, my_r.restaurant_id)
+                        else:
+                            break
+                    else:
+                        print("Table not found")
                 case 6:
                     break
         else:
