@@ -1,7 +1,7 @@
 import sqlite3
 from models import Table, Restaurant
 
-DB_NAME = "restaurants2.db"
+DB_NAME = "restaurants.db"
 def connect_db():
     conn = sqlite3.connect(DB_NAME)
     conn.execute("PRAGMA foreign_keys = 1")
@@ -135,6 +135,13 @@ def add_restaurant(name):
     conn = connect_db()
     cursor = conn.cursor()
     cursor.execute("INSERT INTO Restaurants (restaurant_name) VALUES (?)", (name,))
+    conn.commit()
+    conn.close()
+
+def delete_restaurant(r_id):
+    conn = connect_db()
+    cursor = conn.cursor()
+    cursor.execute("DELETE FROM Restaurants WHERE id = ?", (r_id,))
     conn.commit()
     conn.close()
 
